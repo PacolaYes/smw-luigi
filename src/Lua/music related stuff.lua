@@ -39,8 +39,6 @@ addHook("PlayerThink", function(p)
 	and not S_SoundPlaying(p.mo, sfx_smwslw) then
 		S_StartSound(p.mo, sfx_smwslw)
 	end
-	
-	p.mo.translation = SMW.handleTrans(p.mo)
 end)
 
 addHook("MobjThinker", function(mo)

@@ -4,6 +4,16 @@
 
 local funcs = dofile("Libs/text.lua")
 
+function funcs.abilityCheck(p) -- base ability check :P
+	return not (
+		P_PlayerInPain(p)
+		or p.playerstate == PST_DEAD
+		or (p.mo and p.mo.valid) and not p.mo.health
+		or p.exiting
+	)
+end
+
+-- converts a value from SMW to FUs, fully based on (insert link here)
 function funcs.convertValue(val, comparison, comparison2, signed)
 	if val == nil then return end
 	
@@ -21,12 +31,30 @@ function funcs.convertValue(val, comparison, comparison2, signed)
 	return FixedMul(val, FixedDiv(comparison, comparison2)) -- yes, sprint speed is 3 pixels/frame
 end
 
--- handles translations, function name makes luigi trans canonically (can you tell this is a joke its /j guys its uspposed to be funny)
-function funcs.handleTrans(mo)
-	if not (mo and mo.valid)
-	or mo.skin ~= "realsmwluigi" then return end
+-- gets what color the overlay should use
+function funcs.getOverlayColor(p, color)
+	local fColor = RealSMWLuigi.overlayColor[color] or ColorOpposite(color)
+	if type(p) == "userdata"
+	and userdataType(p) == "player_t"
+	and (p and p.valid) then
+		fColor = p.smw.forceOverlayColor or p.smw.overlayColor or $
+	end
 	
-	return mo.color == SKINCOLOR_SMWRED and "RealSMWLuigiRed" or nil
+	return fColor
+end
+
+function funcs.isMoving(p)
+	local is2D = (p.mo and p.mo.valid) and (p.mo.flags2 & MF2_TWOD) or twodlevel
+	
+	local forward = not is2D and p.cmd.forwardmove or 0
+	return (forward or p.cmd.sidemove) and true or false, forward
+end
+
+function funcs.getMoveAngle(p)
+	local isMoving, forward = funcs.isMoving(p)
+	
+	local add = isMoving and R_PointToAngle2(0, 0, forward*FU, -p.cmd.sidemove*FU) or 0
+	return (p.cmd.angleturn<<16) + add or 0
 end
 
 -- L_ZLaunch made by clairebun

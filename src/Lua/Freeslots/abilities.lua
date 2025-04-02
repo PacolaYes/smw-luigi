@@ -4,6 +4,17 @@
 -- or something like that!!
 -- -pac
 
+function A_SetFrame(mo, var1, var2)
+	if mo.state == mo.setframeoldstate then return end
+	
+	local uframe = var1
+	if (mo.frame & FF_FRAMEMASK) then
+		uframe = var2
+	end
+	mo.frame = uframe|($ & ~FF_FRAMEMASK)
+	mo.setframeoldstate = mo.state
+end
+
 -- p-speed
 freeslot("S_LUIGI_FLY")
 
@@ -19,11 +30,53 @@ sfxinfo[freeslot("sfx_smwssp")].caption = "Super Boot-stomp"
 sfxinfo[freeslot("sfx_smwbsp")].caption = "Boot-stomp"
 
 -- swim
-freeslot("S_LUIGI_SWIMIDLE")
+freeslot(
+	"S_LUIGI_SWIMIDLE",
+	"S_LUIGI_SWIM"
+)
+
+sfxinfo[freeslot("sfx_smwswm")].caption = "Swim"
 
 states[S_LUIGI_SWIMIDLE] = {
 	sprite = SPR_PLAY,
-	sprite2 = SPR2_TWIN,
-	frame = A,
-	tics = -1
+	frame = SPR2_SWIM,
+	action = A_SetFrame,
+	tics = -1,
+	var1 = A
+}
+
+states[S_LUIGI_SWIM] = {
+	sprite = SPR_PLAY,
+	frame = SPR2_SWIM|FF_SPR2ENDSTATE,
+	action = A_SetFrame,
+	tics = 5,
+	var1 = S_LUIGI_SWIMIDLE,
+	var2 = B,
+	nextstate = S_LUIGI_SWIM
+}
+
+-- crouuuch
+-- also slide :D
+freeslot(
+	"S_LUIGI_CROUCH",
+	"S_LUIGI_SLIDE"
+)
+
+states[S_LUIGI_CROUCH] = {
+	sprite = SPR_PLAY,
+	frame = SPR2_LAND
+}
+
+states[S_LUIGI_SLIDE] = {
+	sprite = SPR_PLAY,
+	frame = SPR2_FLT_
+}
+
+-- looking up
+-- not really an ability but ehh :P
+freeslot("S_LUIGI_LOOKUP")
+
+states[S_LUIGI_LOOKUP] = {
+	sprite = SPR_PLAY,
+	frame = SPR2_MLEE
 }

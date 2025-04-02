@@ -4,18 +4,13 @@
 -- this one is for
 
 local SMW = RealSMWLuigi
-local heist = SMW.require("Compatibility/fangs heist.lua")
-
--- sjump standing for spinjump, pretty obvious i think, since it's the spinjump lua
-local SMWF_SJUMPED = 1
-local SMWF_STARTSJUMP = 1<<1
+local heist = SMW.dofile("Compatibility/fangs heist.lua")
 
 local function shouldSJump(p)
 	return not (
-		P_PlayerInPain(p)
-		or p.playerstate == PST_DEAD
-		or p.exiting
+		not SMW.abilityCheck(p)
 		or heist.shouldNerf(p)
+		or p.smw.crouched and not (p.smw.flags & SMWF_SLIDING)
 	)
 end
 
@@ -25,7 +20,6 @@ end
 local srb2jump = FixedMul(39*(FU/4), FU+FU/10)
 local sJumpHeight = SMW.convertValue("B6", srb2jump, 5*FU)
 local function doSJump(p, soundandstate)
-	if heist.shouldNerf(p) then return end
 	
 	P_DoJump(p, false) -- do a jump
 	
@@ -34,6 +28,7 @@ local function doSJump(p, soundandstate)
 	--P_SetObjectMomZ(p.mo, -srb2jump+sJumpHeight, true)
 	SMW.ZLaunch(p.mo, sJumpHeight)
 	p.pflags = $ & ~PF_STARTJUMP -- remove startjump, that'll make us go lower if we don't hold jump
+	p.smw.sjangle = p.mo.angle
 	p.smw.flags = $|SMWF_SJUMPED|SMWF_STARTSJUMP -- add the spinjumped and startspinjump flags, startspinjump hopefully being just startjump for custom 1 instead of jump
 	
 	if soundandstate then -- if we should apply the sound and state
@@ -45,9 +40,11 @@ end
 local function pthink(p)
 	if (p.cmd.buttons & BT_CUSTOM1)
 	and not (p.lastbuttons & BT_CUSTOM1) -- if you've pressed custom 1
-	and P_IsObjectOnGround(p.mo) or p.powers[pw_carry]
+	and (P_IsObjectOnGround(p.mo) or p.powers[pw_carry])
 	and shouldSJump(p) then -- i think this function is pretty self-explanatory
-		doSJump(p, true)
+		if not SMW.executeHook("SpinJumpSpecial", p) then
+			doSJump(p, true)
+		end
 	end
 	
 	if (p.smw.flags & (SMWF_SJUMPED|SMWF_STARTSJUMP)) == (SMWF_SJUMPED|SMWF_STARTSJUMP)
@@ -63,6 +60,7 @@ local function pthink(p)
 	end
 	
 	if (p.smw.flags & SMWF_SJUMPED) then
+		p.smw.sjangle = $+ANGLE_22h
 		if P_IsObjectOnGround(p.mo)
 		or not shouldSJump(p)
 		or not (p.pflags & PF_JUMPED) then
@@ -70,6 +68,7 @@ local function pthink(p)
 			return
 		end
 		
+		p.drawangle = p.smw.sjangle
 		--print("i'm spin jumping!")
 	end
 end
@@ -96,12 +95,28 @@ local function thinkframe(p) -- i kind of want the enemies to shut up :P
 	end
 end
 
+local function sjChecks(mo, pmo)
+	return not (
+		not (mo.flags & MF_ENEMY)
+		or not (pmo and pmo.valid)
+		or not (pmo.player and pmo.player.valid)
+		or pmo.skin ~= "realsmwluigi"
+		or not (pmo.player.smw.flags & SMWF_SJUMPED)
+	)
+end
+
+addHook("MobjDamage", function(mo, pmo, src, dmg)
+	if not sjChecks(mo, pmo)
+	or (mo.player and mo.player.valid) then return end
+	
+	print(pmo == src)
+	
+	mo.health = $-1
+	print(dmg+1)
+end)
+
 addHook("MobjDeath", function(mo, pmo)
-	if not (mo.flags & MF_ENEMY)
-	or not (pmo and pmo.valid)
-	or not (pmo.player and pmo.player.valid)
-	or pmo.skin ~= "realsmwluigi"
-	or not (pmo.player.smw.flags & SMWF_SJUMPED) then return end
+	if not sjChecks(mo, pmo) then return end
 	
 	pmo.momz = 0
 	table.insert(pmo.player.smwshutuplist, 1, {mo, mo.info.deathsound}) -- make the enemy SHUT UP

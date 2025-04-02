@@ -12,12 +12,16 @@ end
 
 local function SMWTable()
 	return {
-		state = "normal",
+		state = 1,
 		pmeter = {
 			time = 0,
 			prejumptime = 0
 		},
-		flags = 0
+		flags = 0,
+		lastpflags = 0, -- self-explanatory name, only here because of sliding :P
+		sjangle = 0, -- the spinjump's drawangle, set to the player object's angle, so its network safe, as fire flower uses it to spawn fire balls :P
+		overlayColor = 0, -- the player's selected overlay color, 0 means automatic
+		forceOverlayColor = 0 -- the forced overlay color, only really used for differenciating fire mario/luigi :P
 	}
 end
 
