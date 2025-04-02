@@ -1,0 +1,21 @@
+name = realsmwluigi
+realname = Luigi
+hudname = Luigi
+flags = SF_MARIODAMAGE|SF_NOJUMPSPIN|SF_HIRES
+ability = CA_NONE
+ability2 = CA2_NONE
+spinitem = MT_NULL
+actionspd = 100
+normalspeed = 10
+runspeed = 9999
+startcolor = 96
+height = 31
+prefcolor = SMW-Green
+supercolor = Gold
+jumpfactor = 1.1
+shieldscale = 0.8
+followitem = MT_SMWOVERLAY
+
+highresscale = 2
+
+DSJUMP = DSSMWJMP
