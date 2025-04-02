@@ -46,5 +46,6 @@ jobs:
       uses: Sniddl/discord-commits@v1.6
       with:
         webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        message: "<@&1242253684339904584> new build! here's all commits:"
         template: "avatar-with-link"
         include-extras: true
