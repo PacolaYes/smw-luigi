@@ -52,3 +52,5 @@ end
 dofile("music related stuff.lua")
 dofile("Freeslots/colors.lua")
 dofile("color related stuff.lua")
+
+dofile("Objects/springs.lua")

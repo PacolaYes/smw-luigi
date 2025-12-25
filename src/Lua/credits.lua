@@ -201,8 +201,6 @@ local creditsList = { -- never would you guess i copied this from source, except
 	'\1for playing!       ',*/
 }
 
---} -- slade sux :)
-
 local smwscenes = {
 	[1] = {
 		bg = "SKY159",
@@ -234,6 +232,8 @@ local function initVar(p)
 	}
 end
 
+---@param p player_t
+---@param num integer
 local function changeScene(p, num)
 	if not (p and p.valid)
 	or not p.smwcredits then return end
@@ -248,13 +248,15 @@ local creditsEndTime = 60*TICRATE+37*TICRATE -- the song's pretty much 1:37 in l
 local changeTime = creditsEndTime-creditsEndTime/4 -- when the last change in scene should happen, more scenes means changes happen faster
 
 addHook("PlayerSpawn", initVar)
+
+---@param p player_t
 addHook("PlayerThink", function(p)
 	if not (p.mo and p.mo.valid)
 	or p.mo.skin ~= "realsmwluigi" then return end
 	
 	if p.smwcredits == nil then initVar(p) end
 	
-	if (p.cmd.buttons & BT_CUSTOM1) -- debugging feature! triggers the credits on custom 1 press
+	if (p.cmd.buttons & BT_CUSTOM1) then -- debugging feature! triggers the credits on custom 1 press
 		S_ChangeMusic("SMWSR", false)
 		p.smwcredits.active = true
 	end
@@ -283,7 +285,7 @@ addHook("PlayerThink", function(p)
 	if not consoleplayer then return end -- if you're the local player
 	
 	local var = CV_FindVar("showhud") -- then get if the hud's being shown or not
-	if var.value ~= 1 -- if it isn't
+	if var.value ~= 1 then -- if it isn't
 		CV_StealthSet(var, 1) -- then force it to show
 	end
 end)

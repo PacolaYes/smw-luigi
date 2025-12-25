@@ -7,9 +7,9 @@
 local SMW = RealSMWLuigi
 local state = SMW.dofile("Libs/states.lua") ---@type smw_statelib
 
-local crouch_pthink, crouch_postthink = dofile("Abilities/crouch.lua") ---@type function, function
-local pspeed = dofile("Abilities/p-speed.lua") ---@type function
-local spinjump_pthink, spinjump_thinkframe = dofile("Abilities/spinjump.lua") ---@type function, function
+local crouch_pthink, crouch_postthink = SMW.dofile("Abilities/crouch.lua") ---@type function, function
+local pspeed_pthink, pspeed_postthink = SMW.dofile("Abilities/p-speed.lua") ---@type function, function
+local spinjump_pthink, spinjump_thinkframe = SMW.dofile("Abilities/spinjump.lua") ---@type function, function
 
 local function check(p)
 	return not (
@@ -27,7 +27,7 @@ local function pthink(self, p)
 	
 	crouch_pthink(p)
 	spinjump_pthink(p)
-	pspeed(p)
+	pspeed_pthink(p)
 	
 	if (p.cmd.buttons & BT_CUSTOM3)
 	and (p.panim == PA_IDLE or p.panim == PA_EDGE) then
@@ -50,6 +50,7 @@ local function postthink(self, p)
 	if not check(p) then return end
 	
 	crouch_postthink(p)
+	pspeed_postthink(p)
 end
 
 state.create("normal", {

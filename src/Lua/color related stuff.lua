@@ -3,6 +3,8 @@
 -- also includes the overlay
 -- since it's related to the overalls' color :P
 
+---@diagnostic disable: missing-fields
+
 local SMW = RealSMWLuigi
 
 local invulnColors = {
@@ -52,10 +54,19 @@ addHook("FollowMobj", function(p, mo)
 	end
 end, MT_SMWOVERLAY)
 
+---@param v videolib
+---@param x fixed_t
+---@param y fixed_t
+---@param scale fixed_t
+---@param skin string
+---@param spr2 integer
+---@param frame integer
+---@param rot integer
+---@param color skincolornum_t
 addHook("HUD", function(v, _, x, y, scale, skin, spr2, frame, rot, color)
 	if skin ~= "realsmwluigi" then return end
 	
-	local cmap = v.getColormap("realoverluigi", SMW.getOverlayColor(p, color))
+	local cmap = v.getColormap("realoverluigi", SMW.getOverlayColor(consoleplayer, color))
 	local ovSpr2, ovFlip = v.getSprite2Patch("realoverluigi", spr2, false, frame, rot)
 	
 	v.drawScaled(x, y, scale, ovSpr2, (ovFlip and V_FLIP or 0), cmap)

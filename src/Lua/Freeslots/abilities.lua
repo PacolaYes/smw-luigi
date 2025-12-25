@@ -4,6 +4,8 @@
 -- or something like that!!
 -- -pac
 
+---@diagnostic disable: missing-fields
+
 function A_SetFrame(mo, var1, var2)
 	if mo.state == mo.setframeoldstate then return end
 	
