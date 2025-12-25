@@ -3,10 +3,9 @@
 -- i think its better to do stuff here, idk!!
 
 local SMW = RealSMWLuigi
-local state = SMW.state
+local state = SMW.dofile("Libs/states.lua") ---@type smw_statelib
 
 local swim = dofile("Abilities/swim.lua")
-local heist = SMW.dofile("Compatibility/fangs heist.lua")
 
 local uwGrav = SMW.convertValue("02", FU/2, 2*FU)
 local baseUWGrav = FU/2 / 3
@@ -15,8 +14,7 @@ local function pthink(self, p)
 	if p.playerstate == PST_DEAD
 	or not p.mo.health then return end
 	
-	if not (p.mo.eflags & MFE_UNDERWATER)
-	or heist.inMode() then
+	if not (p.mo.eflags & MFE_UNDERWATER)then
 		return state.enums.NORMAL
 	end
 	

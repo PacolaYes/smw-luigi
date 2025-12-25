@@ -30,15 +30,6 @@ SMW.overlayColor[SKINCOLOR_SMWFIRERED] = SKINCOLOR_SMWWHITE
 -- clothing: 1, 7, 16
 -- overalls: 1, 8, 16
 
-/*skincolors[SKINCOLOR_SMWGREEN] = { -- bk
-	name = "SMW-Green",
-	ramp = {123, 123, 123, 124, 124, 124, 124, 124, 127, 127, 127, 127, 127, 127, 127, 127},
-	invcolor = SKINCOLOR_GREEN,
-	invshade = 0,
-	chatcolor = V_REDMAP,
-	accessible = true
-}*/
-
 skincolors[SKINCOLOR_SMWGREEN] = {
 	name = "SMW-Green",
 	ramp = {123, 123, 123, 124, 124, 124, 124, 125, 125, 125, 126, 126, 126, 127, 127, 127},
@@ -62,6 +53,7 @@ skincolors[SKINCOLOR_SMWWHITE] = {
 	ramp = {1, 2, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
 	invcolor = SKINCOLOR_SMWRED,
 	invshade = 14,
+	chatcolor = 0,
 	accessible = true
 }
 

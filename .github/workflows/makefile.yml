@@ -35,7 +35,7 @@ jobs:
           fi
 
           if [[ "${{ github.ref_name }}" != "main" ]]; then
-            echo "suffix='-${{ github.ref_name }}'" >> $GITHUB_OUTPUT
+            echo "suffix='-${{ github.ref_name }}'" >> $GITHUB_ENV
           fi
   build:
     runs-on: ubuntu-latest
@@ -51,18 +51,18 @@ jobs:
       - name: do the thing pls
         run: |
           cd src/
-          zip -r ../luigi${{ needs.check.outputs.suffix }}-${{ env.NOW }}.pk3 .
+          zip -r ../luigi${{ env.suffix }}-${{ env.NOW }}.pk3 .
 
       - name: send thing to the action tab
         uses: actions/upload-artifact@v4
         id: artifact-upload
         with:
-          name: luigi${{ needs.check.outputs.suffix }}
-          path: luigi${{ needs.check.outputs.suffix }}-${{ env.NOW }}.pk3
+          name: luigi${{ env.suffix }}
+          path: luigi${{ env.suffix }}-${{ env.NOW }}.pk3
 
       - name: could you preetty please send the file to the discord
         uses: sinshutu/upload-to-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: luigi${{ needs.check.outputs.suffix }}-${{ env.NOW }}.pk3
+          args: luigi${{ env.suffix }}-${{ env.NOW }}.pk3

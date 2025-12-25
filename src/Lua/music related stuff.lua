@@ -5,7 +5,7 @@
 
 local SMW = RealSMWLuigi
 
-local luigiMusList = {
+RealSMWLuigi.replacementMusic = {
 	["_INV"] = {"SMWINV", true},
 	["_MINV"] = {"SMWINV", true},
 	["_BOSS"] = {"SMWBB"},
@@ -13,21 +13,20 @@ local luigiMusList = {
 	["_GOVER"] = {"SMWGO"}
 }
 
-addHook("MusicChange", function(_, new, mflags, loop, pos, prefade, fadein)
+---@param new string
+addHook("MusicChange", function(_, new, ...)
 	if not consoleplayer
 	or skins[consoleplayer.skin].name ~= "realsmwluigi" then return end
 	
-	new = $:upper()
-	if luigiMusList[new] then
-		if luigiMusList[new][2] then
-			loop = luigiMusList[new][2]
-		end
-		if luigiMusList[new][1] then
-			new = luigiMusList[new][1]
+	local old_music = {new:upper(), ...}
+
+	if SMW.replacementMusic[old_music[1]] then
+		for key, value in ipairs(SMW.replacementMusic[old_music[1]]) do
+			old_music[key] = value
 		end
 	end
 	
-	return new, mflags, loop, pos, prefade, fadein
+	return unpack(old_music)
 end)
 
 sfxinfo[freeslot("sfx_smwslw")].caption = "Star Running Out"
@@ -42,7 +41,7 @@ addHook("PlayerThink", function(p)
 end)
 
 addHook("MobjThinker", function(mo)
-	if mo.skin == "realsmwluigi"
+	if mo.skin == "realsmwluigi" then
 		if mo.smwoldtranslation == nil then
 			mo.smwoldtranslation = mo.translation
 		end

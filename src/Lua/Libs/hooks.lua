@@ -8,6 +8,7 @@
 -- its not like its hard to recreate what it does
 -- so its just here becaus why not
 
+---@class smw_hooklib
 local hook = {}
 
 local hookList = {

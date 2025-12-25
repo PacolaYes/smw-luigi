@@ -4,12 +4,11 @@
 -- this one is for
 
 local SMW = RealSMWLuigi
-local heist = SMW.dofile("Compatibility/fangs heist.lua")
+local hooks = SMW.dofile("Libs/hooks.lua") ---@type smw_hooklib
 
 local function shouldSJump(p)
 	return not (
 		not SMW.abilityCheck(p)
-		or heist.shouldNerf(p)
 		or p.smw.crouched and not (p.smw.flags & SMWF_SLIDING)
 	)
 end
@@ -42,7 +41,7 @@ local function pthink(p)
 	and not (p.lastbuttons & BT_CUSTOM1) -- if you've pressed custom 1
 	and (P_IsObjectOnGround(p.mo) or p.powers[pw_carry])
 	and shouldSJump(p) then -- i think this function is pretty self-explanatory
-		if not SMW.executeHook("SpinJumpSpecial", p) then
+		if not hooks.executeHook("SpinJumpSpecial", p) then
 			doSJump(p, true)
 		end
 	end
@@ -61,7 +60,7 @@ local function pthink(p)
 	
 	if (p.smw.flags & SMWF_SJUMPED) then
 		p.smw.sjangle = $+ANGLE_22h
-		if P_IsObjectOnGround(p.mo)
+		if P_IsObjectOnGround(p.mo) and p.mo.momz == 0
 		or not shouldSJump(p)
 		or not (p.pflags & PF_JUMPED) then
 			p.smw.flags = $ & ~SMWF_SJUMPED
@@ -146,4 +145,4 @@ addHook("ShouldDamage", function(pmo, inf, _, _, dmgtype)
 	return false
 end, MT_PLAYER)
 
-return {pthink, thinkframe}
+return pthink, thinkframe

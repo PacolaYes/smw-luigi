@@ -105,4 +105,4 @@ local function postthink(p)
 	end
 end
 
-return {pthink, postthink}
+return pthink, postthink

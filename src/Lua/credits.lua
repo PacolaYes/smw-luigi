@@ -20,6 +20,7 @@
 -- i don't understand some of this
 
 local SMW = RealSMWLuigi
+local hud = SMW.dofile("Libs/hud.lua") ---@type smw_hudlib
 
 local creditsList = { -- never would you guess i copied this from source, except i also modified it!
 	/*{'Sonic Robo Blast 2', true},
@@ -381,7 +382,7 @@ addHook("HUD", function(v, p)
 		-- if the text is below the screen
 		if uy >= 200*FU+MATHstuff then break end -- then get out of this loop since nothing else is being drawn
 		
-		SMW.drawText(v, 160*FU, uy, FU, val[1]:lower(), 0, "center", (val[2] and "SMWFNT" or "SMWBIG"), (val[2] and v.getStringColormap(smallTable[(smallColor%3)+1]) or nil))
+		hud.drawString(v, 160*FU, uy, FU, val[1]:lower(), 0, "center", (val[2] and "SMWFNT" or "SMWBIG"), (val[2] and v.getStringColormap(smallTable[(smallColor%3)+1]) or nil))
 		uy = $+MATHstuff+8*FU
 	end
 end)

@@ -4,7 +4,7 @@
 -- mario world
 
 local SMW = RealSMWLuigi
-local heist = SMW.dofile("Compatibility/fangs heist.lua")
+local hooks = SMW.dofile("Libs/hooks.lua") ---@type smw_hooklib
 
 CV_RegisterVar({
 	name = "luigi_maxspeed",
@@ -62,8 +62,7 @@ end
 local function getSpeedFromTime(time, p)
 	local sprintSpd = speedvals[CV_FindVar("luigi_maxspeed").value] or speedvals[1]
 	
-	if (p and p.valid)
-	and heist.shouldNerf(p) then
+	if (p and p.valid) then
 		sprintSpd = speedvals[0]
 	end
 	
@@ -74,7 +73,7 @@ local function pthink(p)
 	local plyrSpd = FixedDiv(FixedHypot(p.rmomx, p.rmomy), p.mo.scale)
 	local runSpd = getSpeedFromTime(1, p)
 	
-	local hookResults = SMW.executeHook("PSpeedHandle", p)
+	local hookResults = hooks.executeHook("PSpeedHandle", p)
 	
 	if p.panim == PA_JUMP -- above the thing that sets runspeed so it can get other when other mods edit it :P
 	and plyrSpd >= min(p.runspeed, getSpeedFromTime(maxTime, p)) then
