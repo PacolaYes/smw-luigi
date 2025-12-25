@@ -18,10 +18,11 @@ local function check(p)
 	)
 end
 
-local function pthink(self, p)
+---@param p player_t
+local function pthink(_, p)
 	if not check(p) then return end
 	
-	if (p.mo.eflags & MFE_UNDERWATER) then
+	if SMW.isUnderwater(p.mo) then
 		return state.enums.UNDERWATER
 	end
 	
@@ -40,13 +41,15 @@ local function pthink(self, p)
 	end
 end
 
-local function thinkframe(self, p)
+---@param p player_t
+local function thinkframe(_, p)
 	if not check(p) then return end
 	
 	spinjump_thinkframe(p)
 end
 
-local function postthink(self, p)
+---@param p player_t
+local function postthink(_, p)
 	if not check(p) then return end
 	
 	crouch_postthink(p)

@@ -28,26 +28,3 @@ addHook("MusicChange", function(_, new, ...)
 	
 	return unpack(old_music)
 end)
-
-sfxinfo[freeslot("sfx_smwslw")].caption = "Star Running Out"
-
-addHook("PlayerThink", function(p)
-	if not SMW.luigiCheck(p) then return end
-	
-	if p.powers[pw_invulnerability] == TICRATE
-	and not S_SoundPlaying(p.mo, sfx_smwslw) then
-		S_StartSound(p.mo, sfx_smwslw)
-	end
-end)
-
-addHook("MobjThinker", function(mo)
-	if mo.skin == "realsmwluigi" then
-		if mo.smwoldtranslation == nil then
-			mo.smwoldtranslation = mo.translation
-		end
-		
-		mo.translation = SMW.handleTrans(mo)
-	elseif mo.smwoldtranslation then
-		mo.smwoldtranslation, mo.translation = nil, $1
-	end
-end, MT_OVERLAY)

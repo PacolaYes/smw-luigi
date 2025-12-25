@@ -2,12 +2,10 @@
 -- functions!!
 -- just the stuff so the RealSMWLuigi variable can get 'em!
 
-local funcs = {}
-
 --- Checks if the player can use a basic ability.
 ---@param p player_t
 ---@return boolean
-function funcs.abilityCheck(p)
+function RealSMWLuigi.abilityCheck(p)
 	return not (
 		P_PlayerInPain(p)
 		or p.playerstate == PST_DEAD
@@ -22,7 +20,7 @@ end
 ---@param comparison2 fixed_t?
 ---@param signed boolean? If the value is signed.
 ---@return fixed_t
-function funcs.convertValue(val, comparison, comparison2, signed)	
+function RealSMWLuigi.convertValue(val, comparison, comparison2, signed)	
 	if comparison == nil then comparison = 36*FU end
 	if comparison2 == nil then comparison2 = 3*FU end
 	if signed == nil then signed = true end
@@ -41,7 +39,7 @@ end
 ---@param p player_t
 ---@param color skincolornum_t | integer
 ---@return skincolornum_t overlayColor
-function funcs.getOverlayColor(p, color)
+function RealSMWLuigi.getOverlayColor(p, color)
 	local fColor = RealSMWLuigi.overlayColor[color] or ColorOpposite(color)
 	if (p and p.valid) then
 		fColor = p.smw.forceOverlayColor or p.smw.overlayColor or $
@@ -54,7 +52,7 @@ end
 ---@param p player_t
 ---@return boolean moving if the player's trying to move.
 ---@return integer forwardmove the player's `cmd.forwardmove`, taking 2D into account.
-function funcs.isMoving(p)
+function RealSMWLuigi.isMoving(p)
 	local is2D = (p.mo and p.mo.valid) and (p.mo.flags2 & MF2_TWOD) or twodlevel
 	
 	local forward = not is2D and p.cmd.forwardmove or 0
@@ -64,11 +62,24 @@ end
 --- Gets the angle that the player's directional inputs are going in.
 ---@param p player_t
 ---@return angle_t
-function funcs.getMoveAngle(p)
-	local isMoving, forward = funcs.isMoving(p)
+function RealSMWLuigi.getMoveAngle(p)
+	local isMoving, forward = RealSMWLuigi.isMoving(p)
 	
 	local add = isMoving and R_PointToAngle2(0, 0, forward*FU, -p.cmd.sidemove*FU) or 0
 	return ((p.cmd.angleturn<<16) + add) or 0
+end
+
+--- Returns if the specified object is underwater, and only if more than half of its top is submerged.
+---@param mo mobj_t
+---@return boolean
+function RealSMWLuigi.isUnderwater(mo)
+	if (mo.eflags & MFE_UNDERWATER) then
+		return (
+			(mo.z + mo.height/2) < mo.watertop and not (mo.eflags & MFE_VERTICALFLIP)
+		or  (mo.z - mo.height/2) > mo.waterbottom and (mo.eflags & MFE_VERTICALFLIP)
+		)
+	end
+	return false
 end
 
 -- L_ZLaunch made by clairebun
@@ -80,8 +91,8 @@ end
 ---@param mo mobj_t
 ---@param thrust fixed_t
 ---@param relative boolean?
-function funcs.ZLaunch(mo,thrust,relative)
-	if (mo.eflags & MFE_UNDERWATER) then
+function RealSMWLuigi.ZLaunch(mo,thrust,relative)
+	if RealSMWLuigi.isUnderwater(mo) then
 		thrust = $*3/5
 	end
 	P_SetObjectMomZ(mo,thrust,relative)
@@ -91,8 +102,8 @@ end
 ---@param mo mobj_t
 ---@param angle angle_t
 ---@param speed fixed_t
-function funcs.Thrust(mo, angle, speed)
-	if (mo.eflags & MFE_UNDERWATER) then
+function RealSMWLuigi.Thrust(mo, angle, speed)
+	if RealSMWLuigi.isUnderwater(mo) then
 		speed = $/2
 	end
 
@@ -103,12 +114,10 @@ end
 ---@param mo mobj_t
 ---@param angle angle_t
 ---@param speed fixed_t
-function funcs.InstaThrust(mo, angle, speed)
-	if (mo.eflags & MFE_UNDERWATER) then
+function RealSMWLuigi.InstaThrust(mo, angle, speed)
+	if RealSMWLuigi.isUnderwater(mo) then
 		speed = $/2
 	end
 	
 	P_InstaThrust(mo, angle, FixedMul(speed, mo.scale))
 end
-
-return funcs

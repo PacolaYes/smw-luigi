@@ -13,6 +13,7 @@ local swimMaxU = SMW.convertValue("D0", srb2jump, smwjump)
 local swimMaxN = SMW.convertValue("E8", srb2jump, smwjump)
 local swimMaxD = SMW.convertValue("F8", srb2jump, smwjump)
 
+---@param p player_t
 local function pthink(p)
 	if p.mo.state ~= S_LUIGI_SWIMIDLE
 	and p.mo.state ~= S_LUIGI_SWIM
@@ -27,7 +28,7 @@ local function pthink(p)
 	if (p.cmd.buttons & BT_JUMP)
 	and not (p.lastbuttons & BT_JUMP)
 	and SMW.abilityCheck(p) then
-		SMW.ZLaunch(p.mo, swimThrust, true)
+		P_SetObjectMomZ(p.mo, swimThrust, true)
 		
 		local uMax = (p.cmd.buttons & BT_CUSTOM3) and swimMaxU or (p.cmd.buttons & BT_CUSTOM2) and swimMaxD or swimMaxN
 		if p.mo.momz*P_MobjFlip(p.mo) > uMax*2 then

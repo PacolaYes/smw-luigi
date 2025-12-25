@@ -39,23 +39,41 @@ freeslot(
 
 sfxinfo[freeslot("sfx_smwswm")].caption = "Swim"
 
-states[S_LUIGI_SWIMIDLE] = {
-	sprite = SPR_PLAY,
-	frame = SPR2_SWIM,
-	action = A_SetFrame,
-	tics = -1,
-	var1 = A
-}
+if SUBVERSION < 16 then
+	states[S_LUIGI_SWIMIDLE] = {
+		sprite = SPR_PLAY,
+		frame = SPR2_SWIM,
+		action = A_SetFrame,
+		tics = -1,
+		var1 = A
+	}
 
-states[S_LUIGI_SWIM] = {
-	sprite = SPR_PLAY,
-	frame = SPR2_SWIM|FF_SPR2ENDSTATE,
-	action = A_SetFrame,
-	tics = 5,
-	var1 = S_LUIGI_SWIMIDLE,
-	var2 = B,
-	nextstate = S_LUIGI_SWIM
-}
+	states[S_LUIGI_SWIM] = {
+		sprite = SPR_PLAY,
+		frame = SPR2_SWIM|FF_SPR2ENDSTATE,
+		action = A_SetFrame,
+		tics = 5,
+		var1 = S_LUIGI_SWIMIDLE,
+		var2 = B,
+		nextstate = S_LUIGI_SWIM
+	}
+else
+	states[S_LUIGI_SWIMIDLE] = {
+		sprite = SPR_PLAY,
+		sprite2 = SPR2_SWIM,
+		frame = A,
+		tics = -1
+	}
+
+	states[S_LUIGI_SWIM] = {
+		sprite = SPR_PLAY,
+		sprite2 = SPR2_SWIM,
+		frame = B|FF_SPR2ENDSTATE,
+		tics = 5,
+		var1 = S_LUIGI_SWIMIDLE,
+		nextstate = S_LUIGI_SWIM
+	}
+end
 
 -- crouuuch
 -- also slide :D

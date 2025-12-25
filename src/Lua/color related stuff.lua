@@ -14,6 +14,8 @@ local invulnColors = {
 	{SKINCOLOR_SMWWHITE, SKINCOLOR_SMWFIREGREEN}
 }
 
+sfxinfo[freeslot("sfx_smwslw")].caption = "Star Running Out"
+
 addHook("PlayerThink", function(p)
 	if not SMW.luigiCheck(p) then return end
 	
@@ -24,6 +26,9 @@ addHook("PlayerThink", function(p)
 		
 		if p.powers[pw_invulnerability] == 1 then
 			p.smw.forceOverlayColor = 0
+		elseif p.powers[pw_invulnerability] == TICRATE
+		and not S_SoundPlaying(p.mo, sfx_smwslw) then
+			S_StartSound(p.mo, sfx_smwslw)
 		end
 	end
 end)
@@ -37,6 +42,8 @@ mobjinfo[MT_SMWOVERLAY] = {
 	spawnstate = S_INVISIBLE
 }
 
+---@param p player_t
+---@param mo mobj_t
 addHook("FollowMobj", function(p, mo)
 	if not SMW.luigiCheck(p)
 	or not (mo and mo.valid) then return end -- gotta make sure :P
@@ -51,6 +58,24 @@ addHook("FollowMobj", function(p, mo)
 		mo.color = p.mo.color
 	else
 		mo.color = SMW.getOverlayColor(p, p.mo.color)
+	end
+
+	if not p.mo.health then -- A_CapeChase makes us kill ourselves if the player's dead, overwrite that
+		P_MoveOrigin(mo, p.mo.x, p.mo.y, p.mo.z)
+		mo.scale = p.mo.scale
+		mo.destscale = p.mo.destscale
+
+		if (p.mo.eflags & MFE_VERTICALFLIP) then -- copy A_CapeChase
+			mo.eflags = $|MFE_VERTICALFLIP;
+			mo.flags2 = $|MF2_OBJECTFLIP;
+			mo.z = p.mo.z + p.mo.height - mo.height;
+		else
+			mo.eflags = $ & ~MFE_VERTICALFLIP;
+			mo.flags2 = $ & ~MF2_OBJECTFLIP;
+			mo.z = p.mo.z;
+		end
+		mo.angle = p.drawangle;
+		return true
 	end
 end, MT_SMWOVERLAY)
 
