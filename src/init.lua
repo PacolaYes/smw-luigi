@@ -36,8 +36,7 @@ for _, val in ipairs(stateList) do
 	dofile("States/"+val)
 end
 
-dofile("music related stuff.lua")
 dofile("Freeslots/colors.lua")
-dofile("color related stuff.lua")
+dofile("misc.lua")
 
 dofile("Objects/springs.lua")
