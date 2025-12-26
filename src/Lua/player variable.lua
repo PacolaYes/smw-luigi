@@ -28,8 +28,14 @@ local function SMWTable()
 		flags = 0, ---@type integer
 		lastpflags = 0, ---@type playerflags_t -- self-explanatory name, only here because of sliding :P
 		sjangle = 0, ---@type angle_t -- the spinjump's drawangle, set to the player object's angle, so its network safe, as fire flower uses it to spawn fire balls :P
+
+		-- overlay stuff
+
+		overlay_mo = nil, ---@type mobj_t -- The player's overlay
 		overlayColor = 0, ---@type skincolornum_t -- the player's selected overlay color, 0 means automatic
-		forceOverlayColor = 0 ---@type skincolornum_t -- the forced overlay color, only really used for differenciating fire mario/luigi :P
+		forceOverlayColor = 0, ---@type skincolornum_t -- the forced overlay color, only really used for differenciating fire mario/luigi :P
+
+		deadtimer = 0 ---@type tic_t -- how long the player's dead, as player.deadtimer needs to be capped in singleplayer
 	}
 
 	return smw
@@ -48,6 +54,11 @@ addHook("PlayerThink", function(p)
 	
 	if p.smw == nil then
 		p.smw = SMWTable()
+	end
+
+	if not (p.smw.overlay_mo and p.smw.overlay_mo.valid) then
+		p.smw.overlay_mo = P_SpawnMobjFromMobj(p.mo, 0, 0, 0, MT_SMWOVERLAY)
+		p.smw.overlay_mo.tracer = p.mo
 	end
 end)
 

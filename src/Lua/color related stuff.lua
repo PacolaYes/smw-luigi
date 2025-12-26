@@ -16,6 +16,7 @@ local invulnColors = {
 
 sfxinfo[freeslot("sfx_smwslw")].caption = "Star Running Out"
 
+---@param p player_t
 addHook("PlayerThink", function(p)
 	if not SMW.luigiCheck(p) then return end
 	
@@ -25,6 +26,7 @@ addHook("PlayerThink", function(p)
 		p.smw.forceOverlayColor = invulnColor[2]
 		
 		if p.powers[pw_invulnerability] == 1 then
+			p.mo.color = p.skincolor
 			p.smw.forceOverlayColor = 0
 		elseif p.powers[pw_invulnerability] == TICRATE
 		and not S_SoundPlaying(p.mo, sfx_smwslw) then
@@ -39,43 +41,50 @@ end)
 freeslot("MT_SMWOVERLAY")
 
 mobjinfo[MT_SMWOVERLAY] = {
-	spawnstate = S_INVISIBLE
+	spawnstate = S_INVISIBLE,
+	flags = MF_NOCLIP|MF_NOCLIPHEIGHT|MF_NOCLIPTHING|MF_NOGRAVITY -- just making sure
 }
 
----@param p player_t
----@param mo mobj_t
-addHook("FollowMobj", function(p, mo)
-	if not SMW.luigiCheck(p)
-	or not (mo and mo.valid) then return end -- gotta make sure :P
-	
-	mo.sprite = p.mo.sprite
-	mo.sprite2 = p.mo.sprite2
+addHook("MobjThinker", function(mo)
+	if not (mo.tracer and mo.tracer.valid)
+	or mo.tracer.skin ~= "realsmwluigi" then
+		P_RemoveMobj(mo)
+		return
+	end
+	local tracer = mo.tracer
+
+	mo.sprite = tracer.sprite
+	mo.sprite2 = tracer.sprite2
 	mo.skin = "realoverluigi"
-	mo.frame = p.mo.frame
+	mo.frame = tracer.frame
+	mo.flags2 = (tracer.flags2 & MF2_DONTDRAW) | MF2_LINKDRAW
 	
-	mo.colorized = p.mo.colorized
+	mo.colorized = tracer.colorized
 	if mo.colorized then
-		mo.color = p.mo.color
+		mo.color = tracer.color
 	else
-		mo.color = SMW.getOverlayColor(p, p.mo.color)
+		mo.color = SMW.getOverlayColor(tracer.player, tracer.color)
 	end
 
-	if not p.mo.health then -- A_CapeChase makes us kill ourselves if the player's dead, overwrite that
-		P_MoveOrigin(mo, p.mo.x, p.mo.y, p.mo.z)
-		mo.scale = p.mo.scale
-		mo.destscale = p.mo.destscale
+	-- A_CapeChase makes us kill ourselves if the player's dead, overwrite that
+	P_MoveOrigin(mo, tracer.x, tracer.y, tracer.z)
+	mo.scale = tracer.scale
+	mo.destscale = tracer.destscale
 
-		if (p.mo.eflags & MFE_VERTICALFLIP) then -- copy A_CapeChase
-			mo.eflags = $|MFE_VERTICALFLIP;
-			mo.flags2 = $|MF2_OBJECTFLIP;
-			mo.z = p.mo.z + p.mo.height - mo.height;
-		else
-			mo.eflags = $ & ~MFE_VERTICALFLIP;
-			mo.flags2 = $ & ~MF2_OBJECTFLIP;
-			mo.z = p.mo.z;
-		end
-		mo.angle = p.drawangle;
-		return true
+	if (tracer.eflags & MFE_VERTICALFLIP) then -- copy A_CapeChase
+		mo.eflags = $|MFE_VERTICALFLIP;
+		mo.flags2 = $|MF2_OBJECTFLIP;
+		mo.z = tracer.z + tracer.height - mo.height;
+	else
+		mo.eflags = $ & ~MFE_VERTICALFLIP;
+		mo.flags2 = $ & ~MF2_OBJECTFLIP;
+		mo.z = tracer.z;
+	end
+
+	if (tracer.player and tracer.player.valid) then
+		mo.angle = tracer.player.drawangle
+	else
+		mo.angle = tracer.angle
 	end
 end, MT_SMWOVERLAY)
 
@@ -88,11 +97,16 @@ end, MT_SMWOVERLAY)
 ---@param frame integer
 ---@param rot integer
 ---@param color skincolornum_t
-addHook("HUD", function(v, _, x, y, scale, skin, spr2, frame, rot, color)
+local function drawOverlay(v, _, x, y, scale, skin, spr2, frame, rot, color)
 	if skin ~= "realsmwluigi" then return end
 	
 	local cmap = v.getColormap("realoverluigi", SMW.getOverlayColor(consoleplayer, color))
 	local ovSpr2, ovFlip = v.getSprite2Patch("realoverluigi", spr2, false, frame, rot)
-	
-	v.drawScaled(x, y, scale, ovSpr2, (ovFlip and V_FLIP or 0), cmap)
-end, "playersetup")
+
+	if (ovSpr2 and ovSpr2.valid) then
+		v.drawScaled(x, y, scale, ovSpr2, (ovFlip and V_FLIP or 0), cmap)
+	end
+end
+
+addHook("HUD", drawOverlay, "continue")
+addHook("HUD", drawOverlay, "playersetup")

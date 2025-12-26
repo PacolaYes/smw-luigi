@@ -14,7 +14,7 @@ prefcolor = SMW-Green
 supercolor = Gold
 jumpfactor = 1.1
 shieldscale = 0.8
-followitem = MT_SMWOVERLAY
+
 
 highresscale = 2
 

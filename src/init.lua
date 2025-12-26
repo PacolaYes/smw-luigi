@@ -12,7 +12,7 @@ function RealSMWLuigi.dofile(file)
 	if not files[file] then
 		files[file] = {dofile(file)}
 	end
-	return unpack(files[file])
+	return unpack(files[file]) ---@diagnostic disable-line: deprecated
 end
 
 local dofile = RealSMWLuigi.dofile
