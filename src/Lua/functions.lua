@@ -41,7 +41,8 @@ end
 ---@return skincolornum_t overlayColor
 function RealSMWLuigi.getOverlayColor(p, color)
 	local fColor = RealSMWLuigi.overlayColor[color] or ColorOpposite(color)
-	if (p and p.valid) then
+	if (p and p.valid)
+	and p.smw then
 		fColor = p.smw.forceOverlayColor or p.smw.overlayColor or $
 	end
 	

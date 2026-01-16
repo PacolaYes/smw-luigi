@@ -40,3 +40,5 @@ dofile("Freeslots/colors.lua")
 dofile("misc.lua")
 
 dofile("Objects/springs.lua")
+
+dofile("HUD/main.lua")

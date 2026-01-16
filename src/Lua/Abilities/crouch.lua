@@ -4,6 +4,7 @@
 
 local SMW = RealSMWLuigi
 
+---@param p player_t
 local function slidingThink(p)
 	--p.pflags = $1|PF_STASIS
 	
@@ -28,6 +29,7 @@ local function slidingThink(p)
 	p.rmomy = p.mo.momy - p.cmomy
 end
 
+---@param p player_t
 local function pthink(p)
 	local grounded = P_IsObjectOnGround(p.mo)
 	
@@ -39,11 +41,10 @@ local function pthink(p)
 		p.smw.crouched = true
 	end
 	
-	if p.smw.crouched
-	or (p.smw.flags & SMWF_SLIDING) then
+	if p.smw.crouched then
 		local slope = p.mo.standingslope
 		if (slope and slope.valid)
-		and not (p.smw.flags & SMWF_SLIDING) then
+		and not (p.pflags & PF_SPINNING) then
 			--p.smw.flags = $1|SMWF_SLIDING -- if you're on a slope and you're not sliding then please do so :D
 			p.pflags = $1|PF_SPINNING
 		end
@@ -79,15 +80,16 @@ local function pthink(p)
 		end
 	end
 	
-	if not p.smw.crouched then
+	/*if not p.smw.crouched then
 		-- remove SMWF_SLIDING every tic if you aren't crouched :P
 		-- should still trigger the sliding functionality, so you don't
 		-- necessarily have to change p.smw.crouched, if you force the flag to be on
 		-- kinda necessary if you dont wanna force the flag every tic though :P
 		p.smw.flags = $ & ~SMWF_SLIDING
-	end
+	end*/
 end
 
+---@param p player_t
 local function postthink(p)
 	if p.smw.crouched then
 		local forcedState = (p.pflags & PF_SPINNING) and S_LUIGI_SLIDE or S_LUIGI_CROUCH

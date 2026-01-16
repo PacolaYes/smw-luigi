@@ -5,13 +5,12 @@
 
 ---@class player_t
 ---@field smw _smwplayer_t?
+---@field smwshutuplist table<integer, mobj_t?>?
 
 ---@param p player_t
 local function luigiCheck(p)
-	return not (
-		not (p.mo and p.mo.valid)
-		or p.mo.skin ~= "realsmwluigi"
-	)
+	return (p.mo and p.mo.valid)
+		and p.mo.skin == "realsmwluigi"
 end
 
 ---@return _smwplayer_t
@@ -19,6 +18,7 @@ local function SMWTable()
 	---@class _smwplayer_t
 	---@field state integer
 	---@field lastpflags playerflags_t
+	---@field crouched boolean
 	local smw = {
 		state = 1, ---@type integer
 		pmeter = {
@@ -50,7 +50,12 @@ end)
 
 ---@param p player_t
 addHook("PlayerThink", function(p)
-	if not luigiCheck(p) then return end
+	if not luigiCheck(p) then
+		if p.smw then
+			p.smw = nil
+		end
+		return
+	end
 	
 	if p.smw == nil then
 		p.smw = SMWTable()

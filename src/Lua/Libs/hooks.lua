@@ -21,6 +21,11 @@ local addedHooks = {}
 -- if someone keeps adding hooks in a playerthink
 -- thats their fault for doing bad code!!!!
 -- not sure if i can even disable adding thos only outside of hooks (excluding lik AddonLoaded)
+
+--- Binds a function to a hook (i.e., the function will be run when a particular event happens). See Lua/Hooks for more information on using this function.
+---@param hook string
+---@param fn function
+---@param extra any?
 function hook.addHook(hook, fn, extra)
 	if not hookList[hook] then
 		error(hook+" is not a valid hook!")
@@ -41,6 +46,10 @@ function hook.addHook(hook, fn, extra)
 	table.insert(addedHooks[hook], hookTable)
 end
 
+--- Executes all the functions binded to the specified hook, using all parameters supplied.
+---@param hook string
+---@param ... any
+---@return any
 function hook.executeHook(hook, ...)
 	if hook == nil
 	or not hookList[hook]

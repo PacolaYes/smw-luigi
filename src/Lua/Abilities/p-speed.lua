@@ -48,10 +48,12 @@ local speedvals = {
 
 local maxTime = FixedRound(FixedDiv(112, 60)*TICRATE)/FU
 
+---@param mo mobj_t
 local function is2D(mo)
 	return (mo.flags2 & MF2_TWOD) or twodlevel
 end
 
+---@param p player_t
 local function shouldGoUp(p)
 	if (P_IsObjectOnGround(p.mo) or p.smw.pmeter.prejumptime >= maxTime)
 	and SMW.abilityCheck(p)
@@ -61,12 +63,15 @@ local function shouldGoUp(p)
 	return false
 end
 
+---@param time tic_t
+---@param p player_t?
 local function getSpeedFromTime(time, p)
 	local sprintSpd = speedvals[CV_FindVar("luigi_maxspeed").value] or speedvals[1]
 	
 	return time >= maxTime and sprintSpd[3] or time > 0 and sprintSpd[2] or sprintSpd[1]
 end
 
+---@param p player_t
 local function pthink(p)
 	local plyrSpd = FixedDiv(R_PointToDist2(0, 0, p.rmomx, p.rmomy), p.mo.scale)
 	local runSpd = getSpeedFromTime(1, p)
@@ -96,6 +101,7 @@ local function pthink(p)
 	end
 end
 
+---@param p player_t
 local function postthink(p)
 	local plyrSpd = FixedDiv(R_PointToDist2(0, 0, p.rmomx, p.rmomy), p.mo.scale)
 

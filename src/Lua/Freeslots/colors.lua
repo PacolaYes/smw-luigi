@@ -3,7 +3,8 @@
 
 local SMW = RealSMWLuigi
 
-SMW.overlayColor = {}
+SMW.overlayColor = {} ---@type table<skincolornum_t, skincolornum_t?> The color for the overalls when 
+SMW.marioColor = {} ---@type table<skincolornum_t, boolean?> Whether a color will show up as "MARIO" in the HUD or not.
 
 freeslot(
 	"SKINCOLOR_SMWGREEN",
@@ -26,6 +27,8 @@ SMW.overlayColor[SKINCOLOR_SMWBLURPLE] = SKINCOLOR_SMWGREEN
 SMW.overlayColor[SKINCOLOR_SMWAQUA] = SKINCOLOR_SMWRED
 SMW.overlayColor[SKINCOLOR_SMWFIREGREEN] = SKINCOLOR_SMWWHITE
 SMW.overlayColor[SKINCOLOR_SMWFIRERED] = SKINCOLOR_SMWWHITE
+
+SMW.marioColor[SKINCOLOR_SMWAQUA] = true
 
 -- clothing: 1, 7, 16
 -- overalls: 1, 8, 16

@@ -6,10 +6,11 @@
 local SMW = RealSMWLuigi
 local hooks = SMW.dofile("Libs/hooks.lua") ---@type smw_hooklib
 
+---@param p player_t
 local function shouldSJump(p)
 	return not (
 		not SMW.abilityCheck(p)
-		or p.smw.crouched and not (p.smw.flags & SMWF_SLIDING)
+		or p.smw.crouched and not (p.pflags & PF_SPINNING)
 	)
 end
 
@@ -18,8 +19,10 @@ end
 
 local srb2jump = FixedMul(39*(FU/4), FU+FU/10)
 local sJumpHeight = SMW.convertValue("B6", srb2jump, 5*FU)
+
+---@param p player_t
+---@param soundandstate boolean?
 local function doSJump(p, soundandstate)
-	
 	P_DoJump(p, false) -- do a jump
 	
 	if p.powers[pw_carry] then return end -- if we're being carried after having jumped then don't continue
@@ -36,6 +39,7 @@ local function doSJump(p, soundandstate)
 	end
 end
 
+---@param p player_t
 local function pthink(p)
 	if (p.cmd.buttons & BT_CUSTOM1)
 	and not (p.lastbuttons & BT_CUSTOM1) -- if you've pressed custom 1
@@ -72,6 +76,7 @@ local function pthink(p)
 	end
 end
 
+---@param p player_t
 local function thinkframe(p) -- i kind of want the enemies to shut up :P
 	if p.smwshutuplist == nil then
 		p.smwshutuplist = {}
@@ -94,6 +99,8 @@ local function thinkframe(p) -- i kind of want the enemies to shut up :P
 	end
 end
 
+---@param mo mobj_t
+---@param pmo mobj_t
 local function sjChecks(mo, pmo)
 	return not (
 		not (mo.flags & MF_ENEMY)
@@ -104,6 +111,10 @@ local function sjChecks(mo, pmo)
 	)
 end
 
+---@param mo mobj_t
+---@param pmo mobj_t?
+---@param src mobj_t?
+---@param dmg integer
 addHook("MobjDamage", function(mo, pmo, src, dmg)
 	if not sjChecks(mo, pmo)
 	or (mo.player and mo.player.valid) then return end
@@ -114,6 +125,8 @@ addHook("MobjDamage", function(mo, pmo, src, dmg)
 	print(dmg+1)
 end)
 
+---@param mo mobj_t
+---@param pmo mobj_t
 addHook("MobjDeath", function(mo, pmo)
 	if not sjChecks(mo, pmo) then return end
 	
@@ -122,22 +135,27 @@ addHook("MobjDeath", function(mo, pmo)
 	S_StartSound(mo, sfx_smwssp) -- play our own death sound!!
 end)
 
+---@param pmo mobj_t
+---@param inf mobj_t?
+---@param dmgtype integer
 addHook("ShouldDamage", function(pmo, inf, _, _, dmgtype)
-	if pmo.skin ~= "realsmwluigi"
-	or not (pmo.player and pmo.player.valid)
-	or not (pmo.player.smw.flags & SMWF_SJUMPED)
-	or pmo.momz*P_MobjFlip(pmo) > 0 then return end
+	if not (pmo.player and pmo.player.valid)
+	or not SMW.luigiCheck(pmo.player)
+	or not SMW.abilityCheck(pmo.player)
+	or not (pmo.player.smw.flags & SMWF_SJUMPED) then return end
 	
 	if not (inf and inf.valid)
 	and dmgtype ~= DMG_SPIKE
 	or (dmgtype & DMG_DEATHMASK) then return end
-	
-	-- insert check
-	-- that allows luigi t obounce on stuff
-	-- only if hes higher than half of their height
-	/*if (inf and inf.valid) then
-		pmo.z = inf.z+inf.height
-	end*/
+
+	if (inf and inf.valid) then
+		local inf_add = min(16*inf.scale, inf.height/2)
+		if pmo.z < inf.z + inf.height - inf_add and not (pmo.eflags & MFE_VERTICALFLIP)
+		or pmo.z + pmo.height > inf.z + inf_add and (pmo.eflags & MFE_VERTICALFLIP) then
+			return
+		end
+	end
+
 	pmo.player.pflags = $ & ~PF_JUMPED
 	doSJump(pmo.player, false) -- bounce on the thingie
 	pmo.state = S_PLAY_FLY -- reapply the spinjump state, since it gets removed

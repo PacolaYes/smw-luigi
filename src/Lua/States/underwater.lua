@@ -50,7 +50,7 @@ local function pthink(_, p)
 	p.smw.flags = $ & ~(SMWF_SJUMPED|SMWF_STARTSJUMP)
 	p.pflags = $ & ~(PF_JUMPED|PF_STARTJUMP)
 	if p.smw.crouched then
-		p.smw.flags = $ & ~SMWF_SLIDING -- dont continue sliding pls
+		p.pflags = $ & ~PF_SPINNING -- dont continue sliding pls
 	end
 	p.smw.crouched = false
 	

@@ -101,6 +101,7 @@ mobjinfo[MT_SMWOVERLAY] = {
 	flags = MF_NOCLIP|MF_NOCLIPHEIGHT|MF_NOCLIPTHING|MF_NOGRAVITY -- just making sure
 }
 
+---@param mo mobj_t
 addHook("MobjThinker", function(mo)
 	if not (mo.tracer and mo.tracer.valid)
 	or mo.tracer.skin ~= "realsmwluigi" then
