@@ -71,11 +71,20 @@ addHook("HUD", function(v, p)
     local x_patch = hudlib.cachePatch(v, "SMW_TX")
 
     v.draw(20, 14, hudlib.cachePatch(v, getNamePatch(p.skincolor)), V_SNAPTOLEFT|flags, v.getColormap(p.skin, p.skincolor))
-    v.draw(32, 22, x_patch, V_SNAPTOLEFT|flags)
-    hudlib.drawString(v, 56, 22, FU, tostring(getLives(p)), V_SNAPTOLEFT|flags, "right")
+    v.draw(28, 22, x_patch, V_SNAPTOLEFT|flags)
+    hudlib.drawString(v, 52, 22, FU, getLives(p), V_SNAPTOLEFT|flags, "right")
+
+    if token > 0 then
+        local dragoncoin = hudlib.cachePatch(v, "SMW_COIN")
+        for i = 0, token-1 do
+            v.draw(80 + 8*i, 14, dragoncoin, V_SNAPTOLEFT|flags)
+        end
+    end
 
     v.draw(88, 22, hudlib.cachePatch(v, "SMW_STAR"), V_SNAPTOLEFT|flags)
     v.draw(96, 22, x_patch, V_SNAPTOLEFT|flags)
+
+    v.draw(144, 6, hudlib.cachePatch(v, "SMW_ITEMBOX"), flags)
 
     v.draw(212, 14, hudlib.cachePatch(v, "SMW_TIME"), V_SNAPTORIGHT|flags)
     local time = tostring(p.realtime / TICRATE) -- TODO: make this more accurate to SMW's way of handling time
@@ -85,13 +94,12 @@ addHook("HUD", function(v, p)
         hudlib.drawString(v, 235, 22, FU, time, V_SNAPTORIGHT|flags, "right")
     end
 
-    v.draw(260, 14, hudlib.cachePatch(v, "SMW_COIN"), V_SNAPTORIGHT|flags)
-    v.draw(268, 14, x_patch, V_SNAPTORIGHT|flags)
-    local rings = tostring(p.rings)
-    if #rings > 2 then
-        hudlib.drawString(v, 285, 14, FU, rings, V_SNAPTORIGHT|flags)
+    v.draw(259, 14, hudlib.cachePatch(v, "SMW_COIN"), V_SNAPTORIGHT|flags)
+    v.draw(267, 14, x_patch, V_SNAPTORIGHT|flags)
+    if #tostring(p.rings) > 3 then
+        hudlib.drawString(v, 275, 14, FU, p.rings, V_SNAPTORIGHT|flags)
     else
-        hudlib.drawString(v, 299, 14, FU, rings, V_SNAPTORIGHT|flags, "right")
+        hudlib.drawString(v, 299, 14, FU, p.rings, V_SNAPTORIGHT|flags, "right")
     end
     
     hudlib.drawString(v, 299, 22, FU, tostring(p.score), V_SNAPTORIGHT|flags, "right")

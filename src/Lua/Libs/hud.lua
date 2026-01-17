@@ -57,7 +57,7 @@ fonts["SMW-TinyFont"] = {
 ---@return smw_hudlib_font? fontDefinition
 function hud.addFont(name, definition)
 	if fonts[name] then
-		error("[SMW Luigi] Font "+name+" already exists!", 2)
+		error("\x85[SMW Luigi]\x80 Font "+name+" already exists!", 2)
 		return
 	end
 
@@ -142,12 +142,15 @@ end
 ---@param x integer | fixed_t Must be a `fixed_t` if `align` has a `fixed` prefix
 ---@param y integer | fixed_t Must be a `fixed_t` if `align` has a `fixed` prefix
 ---@param scale fixed_t
----@param string string
+---@param string string | number
 ---@param flags integer?
 ---@param align smw_stringAlignment?
 ---@param font (string | smw_hudlib_font)? Defaults to "SMW-TinyFont"
 ---@param colormap colormap?
 function hud.drawString(v, x, y, scale, string, flags, align, font, colormap)
+	if string == nil then return end
+
+	string = tostring($)
 	align = doDefault($, "left")
 	font = doDefault($, "SMW-TinyFont")
 	local font_def = hud.getFont(font)
