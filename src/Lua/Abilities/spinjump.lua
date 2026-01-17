@@ -148,16 +148,20 @@ addHook("ShouldDamage", function(pmo, inf, _, _, dmgtype)
 	and dmgtype ~= DMG_SPIKE
 	or (dmgtype & DMG_DEATHMASK) then return end
 
+	local add_momz = 0
 	if (inf and inf.valid) then
 		local inf_add = min(16*inf.scale, inf.height/2)
-		if pmo.z < inf.z + inf.height - inf_add and not (pmo.eflags & MFE_VERTICALFLIP)
-		or pmo.z + pmo.height > inf.z + inf_add and (pmo.eflags & MFE_VERTICALFLIP) then
+		if pmo.z < inf.z - inf.momz + inf.height - inf_add and not (pmo.eflags & MFE_VERTICALFLIP)
+		or pmo.z + pmo.height > inf.z - inf.momz + inf_add and (pmo.eflags & MFE_VERTICALFLIP) then
 			return
 		end
+		
+		
 	end
 
 	pmo.player.pflags = $ & ~PF_JUMPED
 	doSJump(pmo.player, false) -- bounce on the thingie
+	pmo.momz = $ + add_momz
 	pmo.state = S_PLAY_FLY -- reapply the spinjump state, since it gets removed
 	S_StartSound(pmo, sfx_smwbsp) -- play the bouncing sfx
 	return false
