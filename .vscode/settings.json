@@ -7,5 +7,15 @@
         "inject-field",
         "param-type-mismatch",
         "assign-type-mismatch"
+    ],
+    "Lua.diagnostics.ignoredConstantPrefixes": [
+        "MT_",
+        "S_",
+        "sfx_",
+        "SKINCOLOR_",
+        "SPR_",
+        "SPR2_",
+        "TOL_",
+        "SMWPU_"
     ]
 }

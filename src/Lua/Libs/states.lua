@@ -32,9 +32,7 @@ state.states[0] = {
 	postthinkframe = emptyFunc ---@type fun(self: smw_state_t, player: player_t)? Executes every tic, after everything else.
 }
 
-local state_mt = { ---@type metatable
-	__index = state.states[0]
-}
+local state_mt = {__index = state.states[0]}
 registerMetatable(state_mt)
 
 --- Creates a state.
@@ -49,7 +47,7 @@ function state.create(name, funcList, overwrite)
 	name = tostring($):upper()
 	
 	local stateNum = 0 -- start at BASE
-	for _ in pairs(state.states) do -- will this resync?
+	for _ in pairs(state.states) do
 		stateNum = $+1 -- and go up based on the state numbers (so you'll be at 1 without any other states added :P)
 	end
 	
@@ -57,7 +55,7 @@ function state.create(name, funcList, overwrite)
 		if overwrite then
 			stateNum = state.enums[name]
 		else
-			error("Hey! This state has already been found!", 2)
+			error("\x85[SMW Luigi]\x80 Hey! This state has already been found!", 2)
 			return
 		end
 	end
@@ -86,7 +84,7 @@ function state.getState(p, gstate)
 
 	if (p and p.valid)
 	and gstate == nil then
-		gstate = p.smw.state
+		gstate = p.realmo.smw.state
 	end
 
 	return state.states[gstate] or state.states[0]
@@ -103,14 +101,15 @@ end
 ---@param p player_t
 ---@param cstate integer
 function state.changeState(p, cstate)
-	if not (p and p.valid) then return end
+	if not (p and p.valid)
+	or not (p.mo and p.mo.valid) then return end
 	
 	if state.exists(cstate) then
-		local hookResult = hooks.executeHook("ChangeState", p, p.smw.state, cstate)
+		local hookResult = hooks.executeHook("ChangeState", p, p.mo.smw.state, cstate)
 		if hookResult ~= false
 		and (cstate ~= 0 or hookResult == true) then
 			state.getState(p, cstate):enter(p)
-			p.smw.state = cstate
+			p.mo.smw.state = cstate
 			state.getState(p):exit(p)
 		end
 	end

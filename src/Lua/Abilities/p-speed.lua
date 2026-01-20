@@ -55,7 +55,7 @@ end
 
 ---@param p player_t
 local function shouldGoUp(p)
-	if (P_IsObjectOnGround(p.mo) or p.smw.pmeter.prejumptime >= maxTime)
+	if (P_IsObjectOnGround(p.mo) or p.mo.smw.pmeter.prejumptime >= maxTime)
 	and SMW.abilityCheck(p)
 	and P_GetPlayerControlDirection(p) == 1 then
 		return true
@@ -82,22 +82,24 @@ local function pthink(p)
 		and not p.smw.crouched then
 			if shouldGoUp(p) -- increase the time if it should be increased
 			and plyrSpd >= runSpd-5*FU then -- and if you're at around your max running spd
-				p.smw.pmeter.time = min($+2, maxTime) -- if so then increase the p-meter time by 2 every frame
+				p.mo.smw.pmeter.time = min($+2, maxTime) -- if so then increase the p-meter time by 2 every frame
 			else
-				p.smw.pmeter.time = max(1, $-1) -- otherwise, decrease it by 1 every frame, with a minimum of 1 (0 is used by the speed func to get the walking spd, pretty janky i know :P)
+				p.mo.smw.pmeter.time = max(1, $-1) -- otherwise, decrease it by 1 every frame, with a minimum of 1 (0 is used by the speed func to get the walking spd, pretty janky i know :P)
 			end
-		elseif p.smw.pmeter.time ~= 0 then -- if you're not holding spin and the meter isn't 0 then
-			p.smw.pmeter.time = max(0, $-1) -- decrease it with the smallest value allowed being 0
+		elseif p.mo.smw.pmeter.time ~= 0 then -- if you're not holding spin and the meter isn't 0 then
+			p.mo.smw.pmeter.time = max(0, $-1) -- decrease it with the smallest value allowed being 0
 		end
 	
-		local time = (p.cmd.buttons & BT_SPIN) and p.smw.pmeter.time or 0 -- if you're pressing spin then get the speed according to the p-meter time, otherwise use time 0, which is the time for the walking speed
+		local time = (p.cmd.buttons & BT_SPIN) and p.mo.smw.pmeter.time or 0 -- if you're pressing spin then get the speed according to the p-meter time, otherwise use time 0, which is the time for the walking speed
 		p.normalspeed = getSpeedFromTime(time, p) -- set the player's normalspeed to a speed using the time from the variable that was just created
 		p.runspeed = runSpd+3*FU
 	end
 	
 	-- kind of a misleading name since it's more of a time it was on the grounded buut i dont want it to be massive and idk how else to make it smaller!!
 	if P_IsObjectOnGround(p.mo) then -- if you're grounded then
-		p.smw.pmeter.prejumptime = p.smw.pmeter.time -- set the pre mid-air time variable to whatever the p-meter time is rn
+		p.mo.smw.pmeter.prejumptime = p.mo.smw.pmeter.time -- set the pre mid-air time variable to whatever the p-meter time is rn
+	elseif not (p.pflags & PF_JUMPED) then
+		p.mo.smw.pmeter.prejumptime = 0 -- only do it if you've jumped :P
 	end
 end
 
@@ -122,7 +124,7 @@ if devparm then
 		
 		hud.drawString(
 			v, 320, 0, FU,
-			"meter %: "+FixedRound(FixedDiv(max(p.smw.pmeter.time-1, 0), maxTime-1)*100)/FU+"%\nmeter in tics: "+p.smw.pmeter.time,
+			"meter %: "+FixedRound(FixedDiv(max(p.mo.smw.pmeter.time-1, 0), maxTime-1)*100)/FU+"%\nmeter in tics: "+p.mo.smw.pmeter.time,
 			V_SNAPTORIGHT|V_SNAPTOTOP, "right"
 		)
 	end)

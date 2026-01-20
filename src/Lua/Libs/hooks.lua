@@ -9,12 +9,14 @@
 -- so its just here becaus why not
 
 ---@class smw_hooklib
-local hook = {}
+local hooklib = {}
 
 local hookList = {
 	["SpinJumpSpecial"] = true, -- triggered before a spin-jump happens, returning true disables it
 	["PSpeedHandle"] = true, -- triggered when p-speed's being handled, returning true disables p-speed going up/down
-	["ChangeState"] = true -- triggered when luigi's state changes (ex. going from land to underwater), gives you a player, the state you're coming from and the state you're going to. returning false will disallow the state change, true will allow it, nil makes the mod handle it
+	["ChangeState"] = true, -- triggered when luigi's state changes (ex. going from land to underwater), gives you a player, the state you're coming from and the state you're going to. returning false will disallow the state change, true will allow it, nil makes the mod handle it
+	["PowerUpDamage"] = true, -- triggered when luigi's getting damaged, think of it as MobjDamage but allowing u to overwrite the power-up stuff :P
+	["PowerUpChange"] = true
 }
 local addedHooks = {}
 
@@ -26,7 +28,7 @@ local addedHooks = {}
 ---@param hook string
 ---@param fn function
 ---@param extra any?
-function hook.addHook(hook, fn, extra)
+function hooklib.addHook(hook, fn, extra)
 	if not hookList[hook] then
 		error(hook+" is not a valid hook!")
 		return
@@ -50,7 +52,7 @@ end
 ---@param hook string
 ---@param ... any
 ---@return any
-function hook.executeHook(hook, ...)
+function hooklib.executeHook(hook, ...)
 	if hook == nil
 	or not hookList[hook]
 	or not addedHooks[hook] then return end
@@ -65,4 +67,4 @@ function hook.executeHook(hook, ...)
 	return retval
 end
 
-return hook
+return hooklib

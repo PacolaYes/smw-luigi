@@ -17,6 +17,10 @@ end
 
 local dofile = RealSMWLuigi.dofile
 
+-- i'm not sure how much reusable each of my 'libs' are
+-- other than customhud, i didnt make that :P
+
+
 dofile("constants.lua")
 dofile("functions.lua")
 dofile("player variable.lua")
@@ -40,5 +44,8 @@ dofile("Freeslots/colors.lua")
 dofile("misc.lua")
 
 dofile("Objects/springs.lua")
+dofile("Objects/goal tape.lua")
+
+dofile("Power-ups/base.lua")
 
 dofile("HUD/main.lua")

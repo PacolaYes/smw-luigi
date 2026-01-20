@@ -1,5 +1,5 @@
 
--- functions!!
+-- general functions!!
 -- just the stuff so the RealSMWLuigi variable can get 'em!
 
 --- Checks if the player can use a basic ability.
@@ -57,7 +57,7 @@ function RealSMWLuigi.isMoving(p)
 	local is2D = (p.mo and p.mo.valid) and (p.mo.flags2 & MF2_TWOD) or twodlevel
 	
 	local forward = not is2D and p.cmd.forwardmove or 0
-	return (forward or p.cmd.sidemove) and true or false, forward
+	return ((forward or p.cmd.sidemove) and true or false), forward
 end
 
 --- Gets the angle that the player's directional inputs are going in.

@@ -13,8 +13,9 @@ local maxTime = FixedRound(FixedDiv(112, 60)*TICRATE)/FU
 
 local starting_index = 1
 local function doSpringStuff()
-	for i = starting_index, #mobjinfo-1 do
-		if i == #mobjinfo-1 then return end
+	local ending = #mobjinfo-1
+	for i = starting_index, ending do
+		if i == ending then return end
 
 		local info = mobjinfo[i]
 
@@ -30,17 +31,19 @@ local function doSpringStuff()
 				or pmo.z > spring.z+spring.height
 				or spring.info.painchance == -1 then return end
 				
-				local smw = pmo.player.smw
+				local smw = pmo.smw
 
 				local maxSpeed = getSpeedFromTime(maxTime, pmo.player)
 				local meterBar = FixedRound(ease.linear(FixedDiv(spring.info.damage, maxSpeed), 0, maxTime*FU))/FU
 
 				smw.pmeter.time = max(min(meterBar, maxTime), $)
-				smw.pmeter.prejumptime = smw.pmeter.time
+				if (pmo.player.pflags & PF_JUMPED) then
+					smw.pmeter.prejumptime = smw.pmeter.time
+				end
 			end, i)
 		end
 	end
-	starting_index = #mobjinfo-1
+	starting_index = ending
 end
 
 doSpringStuff()
